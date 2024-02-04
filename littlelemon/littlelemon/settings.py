@@ -58,7 +58,7 @@ ROOT_URLCONF = "littlelemon.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-       'DIRS': ['templates'],
+       'DIRS': ['restaurant/templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -81,13 +81,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'littlelemon',
-        'USER': 'django',
-        'PASSWORD': 'password',
+        'USER': 'root',
+        'PASSWORD': '25256268a',
         'HOST': '127.0.0.1',
         'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
     }
 }
 
@@ -128,9 +125,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATICFILES_DIRS = [
-    "restaurant/static/",
-]
+# STATICFILES_DIRS = [
+#     "static/restaurant",
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -145,7 +142,6 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
-        #"rest_framework_xml.renderers.XMLRenderer",
     ],
 }
 
