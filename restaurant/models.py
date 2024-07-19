@@ -66,10 +66,13 @@ class Cart(models.Model):
     class Meta:
         unique_together = ("menuitem", "user")
 
+    def __str__(self):
+        return f"{self.user}"
+
 
 class Booking(CommonInfo):
     name = models.CharField(max_length=255)
-    number_of_guests = models.IntegerField(default=2, max=10)
+    number_of_guests = models.IntegerField(default=2, max_length=10)
     booking_date = models.DateTimeField()
 
     def clean(self):
