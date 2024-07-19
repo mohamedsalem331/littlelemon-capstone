@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 
 class ExtendedManager(models.Manager):
@@ -16,19 +17,43 @@ class CommonInfo(models.Model):
         abstract = True
 
 
-class Menu(CommonInfo):
-    title = models.CharField(max_length=255)
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-    )
-    inventory = models.IntegerField(default=5)
-
-    class Meta:
-        verbose_name = "Menu"
+class Category(CommonInfo):
+    slug = models.SlugField()
+    title = models.CharField(max_length=255, db_index=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+
+class MenuItem(CommonInfo):
+    title = models.CharField(max_length=255, db_index=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
+    featured = models.BooleanField(db_index=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+
+class Order(CommonInfo):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    delivery_crew = models.ForeignKey(
+        User, on_delete=models.SET_NULL, related_name="delivery_crew", null=True
+    )
+    status = models.BooleanField(db_index=True, default=0)
+    total = models.DecimalField(max_digits=6, decimal_places=2)
+    date = models.DateField(db_index=True)
+
+
+class OrderItem(CommonInfo):
+    order = models.ForeignKey(User, on_delete=models.CASCADE)
+    menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.SmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    class Meta:
+        unique_together = ("order", "menuitem")
 
 
 class Booking(CommonInfo):
