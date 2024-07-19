@@ -9,5 +9,5 @@ urlpatterns = [
     path("menu/", views.menu, name="menu"),
     path("menu_item/<int:pk>/", views.single_menu_item, name="menu_item"),
     path("book/", views.book, name="book"),
-    # path('api-token-auth/', obtain_auth_token)
+    path("api-token-auth/", obtain_auth_token),
 ]
