@@ -3,17 +3,26 @@ from django.contrib.auth.models import User, Group
 
 from .models import Menu, Booking
 
-class MenuSerializer(serializers.ModelSerializer):
-    class Meta():
-        model = Menu
-        fields =  '__all__'
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "title"]
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = ["id", "title", "price", "category", "featured"]
+
 
 class BookingSerializer(serializers.ModelSerializer):
-    class Meta():
+    class Meta:
         model = Booking
-        fields = '__all__'
+        fields = "__all__"
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = "__all__"
