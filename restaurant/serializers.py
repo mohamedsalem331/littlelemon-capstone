@@ -1,13 +1,19 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, MenuItem, Cart, Order, OrderItem, Booking
+from .models import Category, MenuItem, Cart, Order, OrderItem, Booking, Menu
 from datetime import datetime
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["id", "title"]
+        fields = "_all_"
+
+
+class MenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menu
+        fields = "__all__"
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
@@ -23,34 +29,33 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "date_joined", "Date_Joined"]
+        fields = ["id", "username", "email", "date_joined"]
 
-    def get_Date_Joined(self, obj):
+    def get_date_joined(self, obj):
         return obj.date_joined.strftime("%Y-%m-%d")
+
+    # def get_Date_Joined(self, obj):
+    #     return obj.date_joined.strftime("%Y-%m-%d")
 
 
 class UserCartSerializer(serializers.ModelSerializer):
-    unit_price = serializers.DecimalField(
-        max_digits=6, decimal_places=2, source="menuitem.price", read_only=True
-    )
     name = serializers.CharField(source="menuitem.title", read_only=True)
 
     class Meta:
         model = Cart
-        fields = ["user_id", "menuitem", "name", "quantity", "unit_price", "price"]
-        extra_kwargs = {"price": {"read_only": True}}
+        fields = "__all__"
+        # extra_kwargs = {"price": {"read_only": True}}
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     unit_price = serializers.DecimalField(
         max_digits=6, decimal_places=2, source="menuitem.price", read_only=True
     )
-    price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
     name = serializers.CharField(source="menuitem.title", read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ["name", "quantity", "unit_price", "price"]
+        fields = ["name", "quantity"]
         extra_kwargs = {"menuitem": {"read_only": True}}
 
 

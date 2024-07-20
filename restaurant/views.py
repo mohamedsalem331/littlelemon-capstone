@@ -4,6 +4,13 @@ from .models import Booking
 from .serializers import BookingSerializer
 from rest_framework.permissions import IsAuthenticated
 from .forms import BookingForm
+from rest_framework import generics
+from rest_framework.response import Response
+
+
+# class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
+#     person = {"name": "bobo", "age": 1}
+#     return Response(person)
 
 
 def home(request):

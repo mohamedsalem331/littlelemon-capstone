@@ -25,11 +25,19 @@ class Category(CommonInfo):
         return f"{self.title}"
 
 
+class Menu(models.Model):
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.title}"
+
+
 class MenuItem(CommonInfo):
     title = models.CharField(max_length=255, db_index=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
     featured = models.BooleanField(db_index=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -41,30 +49,22 @@ class Order(CommonInfo):
         User, on_delete=models.SET_NULL, related_name="delivery_crew", null=True
     )
     status = models.BooleanField(db_index=True, default=0)
-    total = models.DecimalField(max_digits=6, decimal_places=2)
+    total = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     date = models.DateField(db_index=True)
 
 
 class OrderItem(CommonInfo):
-    order = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
 
     class Meta:
         unique_together = ("order", "menuitem")
 
 
-class Cart(models.Model):
+class Cart(CommonInfo):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
-    quantity = models.SmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
-
-    class Meta:
-        unique_together = ("menuitem", "user")
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user}"
@@ -72,7 +72,7 @@ class Cart(models.Model):
 
 class Booking(CommonInfo):
     name = models.CharField(max_length=255)
-    number_of_guests = models.IntegerField(default=2, max_length=10)
+    number_of_guests = models.IntegerField(default=2)
     booking_date = models.DateTimeField()
 
     def clean(self):
