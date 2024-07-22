@@ -1,62 +1,97 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
-from .models import Booking
-from .serializers import BookingSerializer
 from rest_framework.permissions import IsAuthenticated
-from .forms import BookingForm
-from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.generics import (
+    ListAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    RetrieveAPIView,
+)
+from django.views.generic.edit import FormView
 from rest_framework.response import Response
+from .models import Category, MenuItem, Cart, Order, OrderItem, Booking, Menu
+from .serializers import (
+    BookingSerializer,
+    MenuSerializer,
+    MenuItemSerializer,
+    UserCartSerializer,
+)
+from .forms import BookingForm
 
 
-# class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
-#     person = {"name": "bobo", "age": 1}
-#     return Response(person)
+class home(APIView):
+    def get(self, request, *args, **kwargs):
+        menu_data = Menu.objects.all()
+        return render(request, "index.html", {"menu": menu_data})
 
 
-def home(request):
-    return render(request, "index.html", {})
+class about(APIView):
+    def get(self, request, *args, **kwargs):
+        return render(request, "about.html", {})
 
 
-def about(request):
-    return render(request, "about.html")
-
-
-# def menu(request):
-#     menu_data = Menu.objects.all()
-#     menu_data = menu_data.order_by("price")
-#     main_data = {"menu": menu_data}
-#     return render(request, "menu.html", {"menu": main_data})
-
-
-# def single_menu_item(request, pk=None):
+# class single_menu_item(RetrieveUpdateDestroyAPIView):
+# def get(self, request, *args, **kwargs):
+#     pk = kwargs.get("pk")
+#     item = ""
 #     if pk:
-#         menu_item = Menu.objects.get(pk=pk)
-#     else:
-#         menu_item = ""
-#     return render(request, "menu_item.html", {"menu_item": menu_item})
+#         item = get_object_or_404(MenuItem, pk=pk)
+
+#     return render(request, "menu_item.html", {"menu_item": item})
 
 
-def book(request):
-    form = BookingForm()
-    if request.method == "POST":
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            form.save()
-    context = {"form": form}
-    return render(request, "book.html", context)
+"""
+apis
+"""
 
 
-# class MenuItemsView(generics.ListCreateAPIView):
-#     queryset = Menu.objects.all()
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = MenuSerializer
+class menu(ListAPIView, ListCreateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
 
-# class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Menu.objects.all()
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = MenuSerializer
 
-# class BookingViewSet(viewsets.ModelViewSet):
-#     queryset = Booking.objects.all()
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = BookingSerializer
+class MenuItemView(ListAPIView, ListCreateAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
+    ordering_fields = ["price"]
+    search_fields = ["title"]
+
+
+class SingleItemView(RetrieveUpdateDestroyAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
+
+
+class UserCartView(ListCreateAPIView):
+    serializer_class = UserCartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Cart.objects.filter(user=user)
+
+    # def perform_create(self, serializer):
+    #     order = self.request.data.get("order")
+    #     print("order", order)
+    #     # menuitem = self.request.data.get("menuitem")
+    #     # quantity = self.request.data.get("quantity")
+    #     # unit_price = MenuItem.objects.get(pk=menuitem).price
+    #     # quantity = int(quantity)
+    #     # price = quantity * unit_price
+    #     # serializer.save(user=self.request.user, price=price)
+
+
+class BookForm(FormView):
+    template_name = "book.html"
+    form_class = BookingForm
+    success_url = "/"  # or any URL you want to redirect to after a successful booking
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
+class BookView(ListCreateAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer

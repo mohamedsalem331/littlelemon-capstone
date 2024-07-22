@@ -19,7 +19,7 @@ class MenuSerializer(serializers.ModelSerializer):
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
-        fields = ["id", "title", "price", "category", "featured"]
+        fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,12 +39,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCartSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source="menuitem.title", read_only=True)
 
     class Meta:
         model = Cart
         fields = "__all__"
-        # extra_kwargs = {"price": {"read_only": True}}
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

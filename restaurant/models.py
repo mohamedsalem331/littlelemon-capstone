@@ -52,6 +52,9 @@ class Order(CommonInfo):
     total = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     date = models.DateField(db_index=True)
 
+    def __str__(self):
+        return f"{self.id} - User: {self.user.username} Order: {self.id}"
+
 
 class OrderItem(CommonInfo):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
