@@ -1,3 +1,4 @@
+from functools import reduce
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -18,6 +19,7 @@ from .serializers import (
     MenuItemSerializer,
     UserCartSerializer,
     UserSerializer,
+    UserOrdersSerializer,
 )
 from .forms import BookingForm
 from django.contrib.auth.models import User, Group
@@ -33,6 +35,16 @@ class home(APIView):
 class about(APIView):
     def get(self, request, *args, **kwargs):
         return render(request, "about.html", {})
+
+
+class BookForm(FormView):
+    template_name = "book.html"
+    form_class = BookingForm
+    success_url = "/"  # or any URL you want to redirect to after a successful booking
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 # class single_menu_item(RetrieveUpdateDestroyAPIView):
@@ -110,14 +122,33 @@ class UserCartView(ListCreateAPIView):
         return Response(status=204)
 
 
-class BookForm(FormView):
-    template_name = "book.html"
-    form_class = BookingForm
-    success_url = "/"  # or any URL you want to redirect to after a successful booking
+class Orders_view(ListCreateAPIView):
+    serializer_class = UserOrdersSerializer
+    permission_classes = [IsAuthenticated]
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+    def perform_create(self, serializer):
+        cart_items = Cart.objects.filter(user=self.request.user)
+        total = self.calculate_total(cart_items)
+        order = serializer.save(user=self.request.user, total=total)
+
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                menuitem=cart_item.menuitem,
+                quantity=cart_item.quantity,
+                unit_price=cart_item.unit_price,
+                price=cart_item.price,
+                order=order,
+            )
+            cart_item.delete()
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name="manager").exists():
+            return Order.objects.all()
+        return Order.objects.filter(user=user)
+
+    def calculate_total(self, cart_items):
+        return reduce(lambda x, y: x + y, cart_items, 0)
 
 
 class BookView(ListCreateAPIView):

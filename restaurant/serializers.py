@@ -45,16 +45,16 @@ class UserCartSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    unit_price = serializers.DecimalField(
-        max_digits=6, decimal_places=2, source="menuitem.price", read_only=True
-    )
-    name = serializers.CharField(source="menuitem.title", read_only=True)
+# class OrderItemSerializer(serializers.ModelSerializer):
+#     unit_price = serializers.DecimalField(
+#         max_digits=6, decimal_places=2, source="menuitem.price", read_only=True
+#     )
+#     name = serializers.CharField(source="menuitem.title", read_only=True)
 
-    class Meta:
-        model = OrderItem
-        fields = ["name", "quantity"]
-        extra_kwargs = {"menuitem": {"read_only": True}}
+#     class Meta:
+#         model = OrderItem
+#         fields = ["name", "quantity"]
+#         extra_kwargs = {"menuitem": {"read_only": True}}
 
 
 class UserOrdersSerializer(serializers.ModelSerializer):
