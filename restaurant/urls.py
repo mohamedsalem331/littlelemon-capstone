@@ -10,6 +10,8 @@ from .views import (
     UserCartView,
     BookView,
     BookForm,
+    ManagerUsersView,
+    DeliveryCrewView,
 )
 
 urlpatterns = [
@@ -19,6 +21,8 @@ urlpatterns = [
     path("menu-items/", MenuItemView.as_view()),
     path("menu_items/<int:pk>/", SingleItemView.as_view(), name="menu_item"),
     path("cart/menu-items/", UserCartView.as_view()),
+    path("groups/manager/users/", ManagerUsersView.as_view()),
+    path("groups/delivery-crew/users/", DeliveryCrewView.as_view()),
     path("book/", BookForm.as_view(), name="book"),
     path("bookings/", BookView.as_view(), name="book"),
     path("api-token-auth/", obtain_auth_token),

@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.views import APIView
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
     RetrieveAPIView,
+    RetrieveDestroyAPIView,
 )
 from django.views.generic.edit import FormView
 from rest_framework.response import Response
@@ -16,8 +17,11 @@ from .serializers import (
     MenuSerializer,
     MenuItemSerializer,
     UserCartSerializer,
+    UserSerializer,
 )
 from .forms import BookingForm
+from django.contrib.auth.models import User, Group
+from rest_framework.exceptions import NotFound
 
 
 class home(APIView):
@@ -63,6 +67,30 @@ class SingleItemView(RetrieveUpdateDestroyAPIView):
     serializer_class = MenuItemSerializer
 
 
+class ManagerUsersView(ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        manager_group = Group.objects.get(name="manager")
+        if manager_group:
+            return User.objects.filter(groups=manager_group)
+        else:
+            raise NotFound("Manager group not found")
+
+
+class DeliveryCrewView(ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        delivery_group = Group.objects.get(name="delivery crew")
+        if delivery_group:
+            return User.objects.filter(groups=delivery_group)
+        else:
+            raise NotFound("DeliveryCrew group not found")
+
+
 class UserCartView(ListCreateAPIView):
     serializer_class = UserCartSerializer
     permission_classes = [IsAuthenticated]
@@ -71,15 +99,15 @@ class UserCartView(ListCreateAPIView):
         user = self.request.user
         return Cart.objects.filter(user=user)
 
-    # def perform_create(self, serializer):
-    #     order = self.request.data.get("order")
-    #     print("order", order)
-    #     # menuitem = self.request.data.get("menuitem")
-    #     # quantity = self.request.data.get("quantity")
-    #     # unit_price = MenuItem.objects.get(pk=menuitem).price
-    #     # quantity = int(quantity)
-    #     # price = quantity * unit_price
-    #     # serializer.save(user=self.request.user, price=price)
+    def perform_create(self, serializer):
+        order_id = self.request.data.get("order")
+        order = Order.objects.get(id=order_id)
+        serializer.save(user=self.request.user, order=order)
+
+    def delete(self, request):
+        user = self.request.user
+        Cart.objects.filter(user=user).delete()
+        return Response(status=204)
 
 
 class BookForm(FormView):
