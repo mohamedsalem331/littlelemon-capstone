@@ -26,7 +26,7 @@ class Category(CommonInfo):
 
 
 class Menu(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True, db_index=True)
 
     def __str__(self):
         return f"{self.title}"
