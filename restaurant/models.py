@@ -18,14 +18,14 @@ class CommonInfo(models.Model):
 
 
 class Category(CommonInfo):
-    slug = models.SlugField()
-    title = models.CharField(max_length=255, db_index=True)
+    slug = models.SlugField(max_length=100)
+    title = models.CharField(max_length=255, unique=True, db_index=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
 
 
-class Menu(models.Model):
+class Menu(CommonInfo):
     title = models.CharField(max_length=255, unique=True, db_index=True)
 
     def __str__(self):
@@ -34,8 +34,8 @@ class Menu(models.Model):
 
 class MenuItem(CommonInfo):
     title = models.CharField(max_length=255, db_index=True)
-    price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
-    featured = models.BooleanField(db_index=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    featured = models.BooleanField(db_index=True, default=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
 
