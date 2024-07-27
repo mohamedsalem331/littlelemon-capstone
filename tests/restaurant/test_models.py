@@ -1,11 +1,17 @@
 import pytest
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError, Error
-
-from restaurant.models import Menu, Category, MenuItem
+from decimal import Decimal
+from restaurant.models import Menu, Category, MenuItem, Order, User, OrderItem, Cart
 
 # import factories from previous directory
-from ..factories import MenuItemFactory, CategoryFactory, MenuFactory
+from ..factories import (
+    MenuItemFactory,
+    CategoryFactory,
+    MenuFactory,
+    OrderFactory,
+    CartFactory,
+)
 
 
 pytestmark = pytest.mark.django_db
@@ -66,3 +72,53 @@ class TestCategoryModel:
     def test_str_output(self):
         obj = CategoryFactory(title=self.test_title, slug=self.test_slug)
         assert obj.__str__() == self.test_title
+
+
+class TestOrderModel:
+    def test_obj(self):
+        OrderFactory()
+
+    def test_total_field_max_digits_and_decimal_places(self):
+        valid_total = Decimal("1234.56")
+        order = OrderFactory(total=valid_total)
+        assert order.total == valid_total
+
+        too_large_total = Decimal("12345.67")
+        order = OrderFactory.build(total=too_large_total)
+        with pytest.raises(ValidationError):
+            order.full_clean()
+
+    def test_str_output(self):
+        obj = OrderFactory()
+        assert obj.__str__() == f"{obj.id} - User: {obj.user.username} Order: {obj.id}"
+
+    def test_foreign_key_relationships(self):
+        obj = OrderFactory()
+        user = obj.user
+        delivery_crew = obj.delivery_crew
+
+        assert isinstance(user, User)
+        assert isinstance(delivery_crew, User)
+
+        assert obj.user_id == user.id
+        assert obj.delivery_crew_id == delivery_crew.id
+
+
+class TestCartModel:
+    def test_obj(self):
+        CartFactory()
+
+    def test_str_output(self):
+        obj = CartFactory()
+        assert f"{obj.user.email}"
+
+    def test_foreign_key_relationships(self):
+        obj = CartFactory()
+        user = obj.user
+        order = obj.order
+
+        assert isinstance(user, User)
+        assert isinstance(order, Order)
+
+        assert obj.user_id == user.id
+        assert obj.order_id == order.id

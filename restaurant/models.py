@@ -70,7 +70,7 @@ class Cart(CommonInfo):
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user}"
+        return f"{self.user.email}"
 
 
 class Booking(CommonInfo):
