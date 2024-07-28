@@ -9,16 +9,22 @@
     <!--Begin row-->
     <div class="row">
       <!--Begin col-->
-      <div class="column">
-        <h2>{{ menu_item.name }}</h2>
-        <p>{{ menu_item.menu_item_description }}</p>
-        <p>Price: ${{ menu_item.price }}.00</p>
-      </div>
+              {% if menu_items|length > 0 %}
+              {% for item in menu_items %}
+              <div class="column">
+                <h2>{{ forloop.counter }}. {{ item.title }}</h2>
+                <p>Price: ${{ item.price }}</p>
+              </div>
+              <div class="column">
+                <img src="{% static 'img/restaurant chef C.jpg' %}" />
+              </div>
+              {% endfor %}
+              {% else %}
+              <p style="display: block;"> No Menu Items Available </p>
+              {% endif %}
       <!--End col-->
       <!--Begin col-->
-      <div class="column">
-        <img src="{% static 'img/restaurant chef C.jpg' %}" />
-      </div>
+     
       <!--End col-->
     </div>
     <!--End row-->

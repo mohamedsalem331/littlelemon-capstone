@@ -2,9 +2,11 @@
 <h1>Menu</h1>
 <!--Begin col-->
 <div class="column">
-  {% for item in menu.menu %}
+  {% for item in menu %}
   <p>
-    <a href="{% url 'menu_item' pk=item.pk %}"> {{ item.name }} </a>
+    <a style="cursor: pointer;" href="{% url 'menu-items' pk=item.pk %}"> 
+      {{ item.title }} 
+    </a>
     <!-- <span class="menu-price"> ${{ item.price }}.00 </span> -->
   </p>
   {% endfor %}

@@ -26,15 +26,31 @@ from django.contrib.auth.models import User, Group
 from rest_framework.exceptions import NotFound
 
 
-class home(APIView):
+class HomeHTMLView(APIView):
     def get(self, request, *args, **kwargs):
         menu_data = Menu.objects.all()
         return render(request, "index.html", {"menu": menu_data})
 
 
-class about(APIView):
+class AboutHTMLView(APIView):
     def get(self, request, *args, **kwargs):
         return render(request, "about.html", {})
+
+
+class MenuHTMLView(APIView):
+    def get(self, request, *args, **kwargs):
+        menu_data = Menu.objects.all()
+        print(menu_data[0])
+        return render(request, "menu.html", {"menu": menu_data})
+
+
+class SingleMenuView(APIView):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk:
+            menu_items_data = MenuItem.objects.filter(menu_id=pk)
+
+        return render(request, "menu_item.html", {"menu_items": menu_items_data})
 
 
 class BookForm(FormView):
@@ -45,16 +61,6 @@ class BookForm(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-
-
-# class single_menu_item(RetrieveUpdateDestroyAPIView):
-# def get(self, request, *args, **kwargs):
-#     pk = kwargs.get("pk")
-#     item = ""
-#     if pk:
-#         item = get_object_or_404(MenuItem, pk=pk)
-
-#     return render(request, "menu_item.html", {"menu_item": item})
 
 
 """
