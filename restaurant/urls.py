@@ -8,7 +8,6 @@ from .views import (
     SingleMenuView,
     menu,
     MenuItemView,
-    SingleItemView,
     UserCartView,
     BookView,
     BookForm,
