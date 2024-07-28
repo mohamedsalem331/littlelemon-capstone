@@ -4,7 +4,7 @@ LittleLemon is a full-stack Django resturant web application that leverages Djan
 
 The app also utilized rest_framework for full CRUD operations with authorization and user permissions.
 
-Here are some screenshots of LittleLemon:
+Some screenshots of LittleLemon:
 
 <p align="center">
   <img src="assets/img1.png" alt="Home Page" width="500"/>
