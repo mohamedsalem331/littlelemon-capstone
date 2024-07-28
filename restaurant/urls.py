@@ -28,6 +28,6 @@ urlpatterns = [
     path("groups/manager/users/", ManagerUsersView.as_view()),
     path("groups/delivery-crew/users/", DeliveryCrewView.as_view()),
     path("bookings/", BookForm.as_view(), name="book"),
-    path("book/", BookView.as_view(), name="book"),
+    path("book/", BookView.as_view()),
     path("api-token-auth/", obtain_auth_token),
 ]
