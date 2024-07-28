@@ -1,33 +1,19 @@
 # Meta Backend Capstone
 
-This is a capstone project for the Meta Back-End Development course
+LittleLemon is a full-stack Django resturant web application that leverages Django, REST Framework and Djoser for robust API and full authentication management. Developed with a focus on Scalability , utilized pytest and factory_boy for comprehensive testing.
 
-# Commands
+The app also utilized rest_framework for full CRUD operations with authorization and user permissions.
 
-```bash
-python -m venv capstone
-capstone\Scripts\activate
-```
+Here are some screenshots of LittleLemon:
 
-pip install django
+<p align="center">
+  <img src="assets/img1.png" alt="Home Page" width="500"/>
+</p>
 
-# create a django project
+<p align="center">
+  <img src="assets/img2.png" alt="Booking Page" width="500"/>
+</p>
 
-django-admin startproject littlelemon
-
-# run development server
-
-cd littlelemon
-python manage.py runserver
-
-# create a django app
-
-python manage.py startapp restaurant
-
-# install client
-
-pip3 install mysqlclient
-
-```
-
-```
+<p align="center">
+  <img src="assets/img3.png" alt="Menu Page" width="500"/>
+</p>
